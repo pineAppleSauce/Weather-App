@@ -1,8 +1,23 @@
+const dotenv = require('dotenv');
+dotenv.config({ path:  '../../.env' });
 const express = require("express");
 const axios = require("axios");
 const router = express.Router();
-const cron = require('node-cron');
-const average = require('./utils')
+const cron = require("node-cron");
+const average = require("./utils");
+
+// Validate required environment variables
+/*const requiredEnvVars = [
+  "OPENWEATHER_API_KEY",
+  "WEATHERAPI_API_KEY",
+];
+
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`Missing required environment variable: ${envVar}`);
+    process.exit(1); // Exit the process with an error code
+  }
+}*/
 
 router.get("/weather", async (req, res) => {
   const city = req.query.city;
@@ -69,24 +84,36 @@ const calculateAverageTemperature = router.post("/average", (req, res) => {
 
   if (
     (openWeatherCurrentTemperature === undefined &&
-    weatherAPICurrentTemperature === undefined) ||
+      weatherAPICurrentTemperature === undefined) ||
     (openWeatherForecastTemperature === undefined &&
-    weatherAPIForecastTemperature === undefined)
+      weatherAPIForecastTemperature === undefined)
   ) {
-    return res.status(400).json({ error: 'Missing temperature data in the request.' });
+    return res
+      .status(400)
+      .json({ error: "Missing temperature data in the request." });
   }
 
-  averageCurrentTemperature = average.calculateAverageTemperature([openWeatherCurrentTemperature, weatherAPICurrentTemperature]);
-  averageForecastTemperature = average.calculateAverageTemperature([openWeatherForecastTemperature, weatherAPIForecastTemperature]);
- 
+  averageCurrentTemperature = average.calculateAverageTemperature([
+    openWeatherCurrentTemperature,
+    weatherAPICurrentTemperature,
+  ]);
+  averageForecastTemperature = average.calculateAverageTemperature([
+    openWeatherForecastTemperature,
+    weatherAPIForecastTemperature,
+  ]);
+
   res.json({ averageCurrentTemperature, averageForecastTemperature });
 });
 
-cron.schedule('0 0 * * *', () => {
-  calculateAverageTemperature();
-}, {
-  scheduled: true,
-  timezone: process.env.YOUR_TIMEZONE,
-});
+cron.schedule(
+  "0 0 * * *",
+  () => {
+    calculateAverageTemperature();
+  },
+  {
+    scheduled: true,
+    timezone: process.env.YOUR_TIMEZONE,
+  }
+);
 
 module.exports = router;

@@ -11,7 +11,7 @@ const WeatherComponent = () => {
   const [errorOpenWeatherForecastTemperature, setOpenWeatherForecastTemperatureError] = useState(null);
   const [errorWeatherAPICurrentTemperature, setWeatherAPICurrentTemperatureError] = useState(null);
   const [errorWeatherAPIForecastTemperature, setWeatherAPIErrorForecastTemperature] = useState(null);
-  const [averageCurrentTemperature, setAverageCurrentTemperature] = useState(null); // Added missing useState initialization
+  const [averageCurrentTemperature, setAverageCurrentTemperature] = useState(null);
 
   const city = process.env.REACT_APP_CITY;
   const openWeatherAPIKey = process.env.REACT_APP_OPENWEATHER_API_KEY;
